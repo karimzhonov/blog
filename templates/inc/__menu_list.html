@@ -1,0 +1,19 @@
+{% load cache %}
+{% cache 30 menu %}
+  {% load menu %}
+  {% get_categories as category %}
+  <ul id="menu">
+    <li class=""><a href="{% url 'home' %}">Home</a></li>
+    {% for item in category %}
+      <li><a href="{{ item.get_absolute_url }}">{{ item.title|title }}</a></li>
+    {% endfor %}
+  </ul>
+{% endcache %}
+
+<script>
+  document.getElementById('menu').querySelectorAll("a").forEach(point => {
+    if (point.href === window.location.href) {
+      point.parentElement.className = 'active'
+    }
+  })
+</script>

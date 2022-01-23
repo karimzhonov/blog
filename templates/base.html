@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}TITLE{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,900" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'myblog/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'myblog/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'myblog/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'myblog/css/owl.theme.default.min.css' %}">
+    <link rel="stylesheet" href="{% static 'myblog/style.css' %}">
+    <link rel="stylesheet" href="{% static 'myblog/responsive.css' %}">
+    {% block styles %}{% endblock %}
+</head>
+
+<body>
+
+    <div class="wrapper">
+        {% include 'inc/header.html' %}
+
+        {% block content %}CONTENT{% endblock %}
+
+        {% include 'inc/footer.html' %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+    <script src="{% static 'myblog/js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'myblog/js/bootstrap.min.js' %} "></script>
+    <script src="{% static 'myblog/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'myblog/js/active.js' %}"></script>
+</body>
+
+</html>

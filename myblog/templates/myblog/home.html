@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  {% if promo %}
+    {% include 'inc/promo.html' %}
+  {% endif %}
+  <section class="blog-post-area">
+    {# Content#}
+    <div class="container">
+      <div class="row">
+      {% if page_obj.paginator.count %}
+        <div class="blog-post-area-style">
+          {# BigContent #}
+          {% for point in page_obj|slice:'0:1' %}
+            <div class="col-md-12">
+              <div class="single-post-big">
+                <div class="big-image">
+                  {% if point.photo %}
+                    <img src="{{ point.photo.url }}" alt="photo">
+                  {% endif %}
+                </div>
+                <div class="big-text">
+                  <h3><a href="{{ point.get_absolute_url }}">{{ point.title|title|truncatechars:50 }}</a></h3>
+                  <p>{{ point.content|safe|truncatewords_html:70 }}</p>
+                  <i style="color: #ccc">Views: {{ point.views }}</i>
+                  <h4><span class="date">{{ point.created_at|date:'j E Y' }}</span><span class="author">Posted By: <span
+                      class="author-name">{{ point.author }}</span></span>
+                  </h4>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+          {# TableContent #}
+          {% for point in page_obj|slice:'1:' %}
+            <div class="col-md-3">
+              <div class="single-post">
+                {% if point.photo %}
+                  <img src="{{ point.photo.url }}" alt="photo">
+                {% endif %}
+                <h3><a href="{{ point.get_absolute_url }}">{{ point.title|title|truncatechars:19 }}</a></h3>
+                <h4><span>Posted By: <span class="author-name">{{ point.author }}</span></span>
+                </h4>
+                <p>{{ point.content|safe|truncatewords_html:50 }}</p>
+                <h4 style="display: flex; justify-content: space-between">
+                  <span>{{ point.created_at|date:'j E Y' }}</span><i style="font-size: 13px"
+                                                                     class="fa fa-eye">  {{ point.views }}</i></h4>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <h3 style="text-align: center">Noo posts for this search</h3>
+      {% endif %}
+      </div>
+    </div>
+
+    {# Pagination#}
+    {% include 'inc/pagination.html' %}
+  </section>
+
+{% endblock %}

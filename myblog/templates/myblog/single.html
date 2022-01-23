@@ -1,0 +1,175 @@
+{% extends 'base_single.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+
+{% block content %}
+{{ kwargs }}
+<section class="single-blog-area">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="border-top">
+          {# Content#}
+          <div class="col-md-8">
+            <div class="blog-area">
+              {# Post#}
+              <div class="blog-area-part">
+                <h2>{{ content.title|title }}</h2>
+                <div class="for-style">
+                  <img src="{{ content.photo.url }}" alt="photo">
+                  <div style="margin-top: 10px; font-family: Roboto, sans-serif; color: #CCCCCC">
+                    Views: {{ content.views }}</div>
+
+                  <div class="tags commententries">
+                    <h3 class="">Category: <span><a href="{{ content.category.get_absolute_url }}">{{
+                          content.category.title }}</a></span></h3>
+                  </div>
+
+                  <p>
+                    {# <span class="drop_caps"></span>#}
+                    {{ content.content|safe }}</p>
+                </div>
+
+                {# Tags #}
+                <div class="tags commententries">
+                  {% if content.tags.exists %}
+                  <h3 class="">Tags</h3>
+                  {% for tag in content.tags.all %}
+                  <p style="margin-top: 10px"><a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a></p>
+                  {% endfor %}
+                  {% endif %}
+                </div>
+
+              </div>
+
+              {# Comments#}
+              <div class="commententries">
+                <h3>Comments</h3>
+                <ul id="comments_list" class="commentlist"></ul>
+              </div>
+
+              {# AddComments#}
+              <form>
+                <div id="slug_post" style="display: none">{{ content.slug }}</div>
+
+                <div style="margin: 10px">
+                  <input id="name" type="text" placeholder="Name">
+                </div>
+                <div style="margin: 10px">
+                  <input id="content" type="text" placeholder="Comment">
+                </div>
+                <div style="margin: 10px">
+                  <input type="button" id="post_button"
+                    style="background: #40C4FF; font-size: 20px; text-align: center; cursor: pointer;" value="Post">
+                </div>
+
+                <script>
+                  async function getComments(slug) {
+                    await fetch(`http://127.0.0.1:8000/rest/comments/get/${slug}?format=json`).then(res => {
+                      return res.json()
+                    }).then(data => {
+                      data.forEach(point => {
+                        let li = document.createElement('li')
+                        li.innerHTML = `<article class="comment">
+                                            <section class="comment-details">
+                                              <div class="author-name">
+                                                <h5><a></a></h5>
+                                                <p></p>
+                                              </div>
+                                              <div class="comment-body">
+                                                <p></p>
+                                              </div>
+                                            </section>
+                                           </article>`
+                        li.querySelector('a').innerText = point.name;
+                        li.querySelector('.author-name').querySelector('p').innerText = point.created_at;
+                        li.querySelector('.comment-body').querySelector('p').innerText = point.content;
+                        document.getElementById('comments_list').appendChild(li)
+                      })
+                    })
+                  }
+                  getComments(document.getElementById('slug_post').innerText)
+
+                  async function postComment(slug) {
+                    const data = {
+                      'name': document.getElementById('name').value,
+                      'content': document.getElementById('content').value,
+                      'slug': slug,
+                    }
+                    document.getElementById('name').value = ''
+                    document.getElementById('content').value = ''
+
+                    await axios.post(`http://127.0.0.1:8000/rest/comments/post/${slug}?format=json`, data)
+
+                    let li = document.createElement('li')
+                    li.innerHTML = `<article class="comment">
+                                            <section class="comment-details">
+                                              <div class="author-name">
+                                                <h5><a></a></h5>
+                                                <p></p>
+                                              </div>
+                                              <div class="comment-body">
+                                                <p></p>
+                                              </div>
+                                            </section>
+                                           </article>`
+                    li.querySelector('a').innerText = data.name;
+                    li.querySelector('.comment-body').querySelector('p').innerText = data.content;
+                    document.getElementById('comments_list').appendChild(li)
+                  }
+                  document.getElementById('post_button').addEventListener('click', () => {
+                    postComment(document.getElementById('slug_post').innerText)
+                  })
+                </script>
+              </form>
+
+            </div>
+          </div>
+
+          {# SiteBar#}
+          <div class="col-md-4">
+            {# Search#}
+            {% include 'inc/__search.html' %}
+
+            {# SortButton#}
+            <div class="newsletter">
+              <h2 class="sidebar-title">Popular</h2>
+            </div>
+
+            {# SortItem#}
+            <div class="grid" style="position: relative">
+              {% if posts.exists %}
+              {% for post in posts|slice:'0:3' %}
+              <div class="portfolio-item popular">
+                <img src="{{ post.photo.url }}" alt="photo">
+                <div class="portfolio-text">
+                  <h5><a href="{{ post.get_absolute_url }}">{{ post.title|safe|truncatechars:30 }}</a></h5>
+                  <p>By {{ post.author }}<span>|</span>{{ post.created_at|date }}</p>
+                </div>
+              </div>
+              {% endfor %}
+              {% endif %}
+            </div>
+
+            {# Tags#}
+            <div class="tags">
+              {% if tags.exists %}
+              <h2 class="sidebar-title">Tags</h2>
+              {% for tag in tags %}
+              <p><a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a></p>
+              {% endfor %}
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
